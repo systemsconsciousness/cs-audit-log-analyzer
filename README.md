@@ -4,7 +4,7 @@ A powerful Next.js application for analyzing Contentstack audit logs with intera
 
 ## Features
 
-### 📊 Comprehensive Analytics
+### Comprehensive Analytics
 - **Overview Dashboard**: Total events, unique users, organizations, and stacks
 - **Time-based Analysis**: Events over time with interactive charts
 - **Activity Heatmap**: Hourly activity patterns
@@ -13,7 +13,7 @@ A powerful Next.js application for analyzing Contentstack audit logs with intera
 - **Content Type Analysis**: Content operations and usage patterns
 - **Module Insights**: Platform module usage statistics
 
-### 🎯 Key Insights
+### Key Insights
 - **User Behavior**: Track user activity patterns, login/logout events, and content operations
 - **Content Operations**: Monitor create, update, delete, publish, and unpublish activities
 - **Launch Projects**: Analyze deployment patterns and Launch usage
@@ -21,7 +21,7 @@ A powerful Next.js application for analyzing Contentstack audit logs with intera
 - **Multi-org Analysis**: Compare activity across different organizations
 - **Real-time Processing**: Client-side CSV processing with no server uploads
 
-### 🔒 Privacy & Security
+### Privacy & Security
 - **Local Processing**: All data processing happens in your browser
 - **No Data Upload**: CSV files are never sent to any server
 - **Secure Analysis**: Complete privacy for your audit log data
@@ -172,10 +172,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-For questions or issues:
-1. Check the existing issues on GitHub
-2. Create a new issue with detailed information
-3. Include sample data (anonymized) if possible
+This project is for demo purposes only. Use at your own risk.
 
 ---
 
