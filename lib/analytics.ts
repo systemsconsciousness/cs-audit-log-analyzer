@@ -487,7 +487,8 @@ export const analyzeUserEngagement = (data: ProcessedAuditLog[]): UserEngagement
         isContentBuilder: false,
         publishEvents: 0,
         createEvents: 0,
-        updateEvents: 0
+        updateEvents: 0,
+        avgItemsPerStack: {}
       }
     }
 
@@ -682,7 +683,7 @@ export const analyzeContentTypeLocaleAdoption = (data: ProcessedAuditLog[]): Con
     totalEntries: adoption.entries.size,
     publishedEntries: adoption.publishedEntries.size,
     lastActivity: adoption.lastActivity,
-    activeUsers: Array.from(adoption.users),
+    activeUsers: Array.from(adoption.users) as string[],
     adoptionScore: adoption.entries.size * (adoption.users.size * 0.5) + (adoption.publishedEntries.size * 2)
   })).sort((a, b) => b.adoptionScore - a.adoptionScore)
 }

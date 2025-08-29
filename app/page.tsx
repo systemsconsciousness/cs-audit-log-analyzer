@@ -3,13 +3,13 @@
 import { useState } from 'react'
 import { FileUpload } from '@/components/FileUpload'
 import { Dashboard } from '@/components/Dashboard'
-import { AuditLogData } from '@/types/audit-log'
+import { ProcessedAuditLog } from '@/types/audit-log'
 
 export default function Home() {
-  const [auditData, setAuditData] = useState<AuditLogData[]>([])
+  const [auditData, setAuditData] = useState<ProcessedAuditLog[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleDataLoaded = (data: AuditLogData[]) => {
+  const handleDataLoaded = (data: ProcessedAuditLog[]) => {
     setAuditData(data)
   }
 
