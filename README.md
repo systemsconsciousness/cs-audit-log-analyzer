@@ -4,7 +4,7 @@ A powerful Next.js application for analyzing Contentstack audit logs with intera
 
 ## Features
 
-### Comprehensive Analytics
+### AComprehensive Analytics
 - **Overview Dashboard**: Total events, unique users, organizations, and stacks
 - **Time-based Analysis**: Events over time with interactive charts
 - **Activity Heatmap**: Hourly activity patterns

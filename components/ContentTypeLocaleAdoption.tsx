@@ -5,6 +5,7 @@ import { ContentTypeLocaleAdoption } from '@/types/audit-log'
 import { ExportButton } from './ExportButton'
 import { formatRelativeTime } from '@/lib/utils'
 import { Globe, FileText, Users, Calendar, Hash, TrendingUp } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 interface ContentTypeLocaleAdoptionProps {
   adoptionData: ContentTypeLocaleAdoption[]
@@ -40,8 +41,85 @@ export function ContentTypeLocaleAdoptionTable({ adoptionData }: ContentTypeLoca
     }
   })
 
+  // Chart data
+  const contentTypeBreakdown = contentTypes.map(ct => {
+    const ctData = adoptionData.filter(d => d.contentType === ct)
+    return {
+      name: ct,
+      totalEntries: ctData.reduce((sum, d) => sum + d.totalEntries, 0),
+      locales: ctData.length,
+      color: ctData.length > 5 ? '#7c4dff' : ctData.length > 3 ? '#1783ff' : '#ec3cdb'
+    }
+  }).sort((a, b) => b.totalEntries - a.totalEntries).slice(0, 8)
+
+  const localeBreakdown = locales.map(locale => {
+    const localeData = adoptionData.filter(d => d.locale === locale)
+    return {
+      name: localeData[0]?.localeName || locale,
+      totalEntries: localeData.reduce((sum, d) => sum + d.totalEntries, 0),
+      contentTypes: localeData.length,
+      color: localeData.length > 10 ? '#7c4dff' : localeData.length > 5 ? '#1783ff' : '#ec3cdb'
+    }
+  }).sort((a, b) => b.totalEntries - a.totalEntries).slice(0, 8)
+
   return (
     <div className="space-y-6">
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Locale Activity Distribution */}
+        <div className="bg-white border rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Locale Activity Distribution</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={localeBreakdown}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#fff', 
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="totalEntries" fill="#1783ff" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Content Type Distribution */}
+        <div className="bg-white border rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Content Types by Total Entries</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={contentTypeBreakdown}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="totalEntries"
+                >
+                  {contentTypeBreakdown.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white border rounded-lg p-4">
@@ -215,9 +293,6 @@ export function ContentTypeLocaleAdoptionTable({ adoptionData }: ContentTypeLoca
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Last Activity
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Adoption Score
-                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -264,15 +339,6 @@ export function ContentTypeLocaleAdoptionTable({ adoptionData }: ContentTypeLoca
                       <Calendar className="h-4 w-4 mr-1" />
                       {formatRelativeTime(item.lastActivity)}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      item.adoptionScore > 50 ? 'bg-green-100 text-green-800' :
-                      item.adoptionScore > 20 ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {Math.round(item.adoptionScore)}
-                    </span>
                   </td>
                 </tr>
               ))}

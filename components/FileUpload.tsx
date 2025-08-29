@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { Upload, FileText, AlertCircle } from 'lucide-react'
+import { Upload, FileText, AlertCircle, Github } from 'lucide-react'
 import { parseCSV } from '@/lib/csv-parser'
 import { ProcessedAuditLog } from '@/types/audit-log'
 import { formatBytes } from '@/lib/utils'
@@ -130,11 +130,23 @@ export function FileUpload({ onDataLoaded, isLoading, setIsLoading }: FileUpload
         </div>
       )}
 
-      <div className="mt-6 text-center text-sm text-gray-500">
-        <p>
-          Your CSV file will be processed locally in your browser. 
-          No data is uploaded to any server.
+      <div className="mt-6 text-center space-y-3">
+        <p className="text-sm text-gray-500">
+          Your CSV file is processed locally in your browser. No data is uploaded to any server.
         </p>
+        
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+          <span>Demo purposes only.</span>
+          <a 
+            href="https://github.com/systemsconsciousness/cs-audit-log-analyzer" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors font-medium"
+          >
+            <Github className="h-4 w-4" />
+            View source code on GitHub
+          </a>
+        </div>
       </div>
     </div>
   )

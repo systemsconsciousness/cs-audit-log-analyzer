@@ -4,14 +4,90 @@ import { StackActivity } from '@/types/audit-log'
 import { formatRelativeTime } from '@/lib/utils'
 import { ExportButton } from './ExportButton'
 import { Database, Users, Hash, Calendar, FileText, Globe } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 interface StackAnalysisTableProps {
   stacks: StackActivity[]
 }
 
 export function StackAnalysisTable({ stacks }: StackAnalysisTableProps) {
+  // Chart data
+  const stackActivityData = stacks
+    .sort((a, b) => b.totalEvents - a.totalEvents)
+    .slice(0, 10)
+    .map(stack => ({
+      name: stack.stack.length > 15 ? stack.stack.substring(0, 15) + '...' : stack.stack,
+      events: stack.totalEvents,
+      users: stack.uniqueUsers
+    }))
+
+  const stackSizeData = stacks.map(stack => ({
+    name: stack.stack.length > 20 ? stack.stack.substring(0, 20) + '...' : stack.stack,
+    value: stack.uniqueUsers,
+    color: stack.uniqueUsers > 10 ? '#7c4dff' : stack.uniqueUsers > 5 ? '#1783ff' : '#ec3cdb'
+  })).sort((a, b) => b.value - a.value).slice(0, 8)
+
   return (
-    <div className="bg-white border rounded-lg overflow-hidden">
+    <div className="space-y-6">
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Stack Activity Chart */}
+        <div className="bg-white border rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Stack Activity</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stackActivityData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#fff', 
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="events" fill="#7c4dff" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Stack User Distribution */}
+        <div className="bg-white border rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Users per Stack</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={stackSizeData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, value }) => `${name}: ${value}`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {stackSizeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Stack Analysis Table */}
+      <div className="bg-white border rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div>
@@ -127,6 +203,7 @@ export function StackAnalysisTable({ stacks }: StackAnalysisTableProps) {
             })}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   )

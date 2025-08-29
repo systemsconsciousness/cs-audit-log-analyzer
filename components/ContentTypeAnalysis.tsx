@@ -2,14 +2,55 @@
 
 import { ContentTypeActivity } from '@/types/audit-log'
 import { FileText, Hash, Users } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface ContentTypeAnalysisProps {
   contentTypes: ContentTypeActivity[]
 }
 
 export function ContentTypeAnalysis({ contentTypes }: ContentTypeAnalysisProps) {
+  // Chart data
+  const contentTypeData = contentTypes
+    .sort((a, b) => b.totalEvents - a.totalEvents)
+    .slice(0, 10)
+    .map(ct => ({
+      name: ct.contentType.length > 15 ? ct.contentType.substring(0, 15) + '...' : ct.contentType,
+      operations: ct.totalEvents,
+      users: ct.users.length
+    }))
+
   return (
-    <div className="bg-white border rounded-lg overflow-hidden">
+    <div className="space-y-6">
+      {/* Content Type Usage Chart */}
+      <div className="bg-white border rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Content Type Usage</h3>
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={contentTypeData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis 
+                dataKey="name" 
+                tick={{ fontSize: 12, fill: '#64748b' }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#fff', 
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px'
+                }}
+              />
+              <Bar dataKey="operations" fill="#ec3cdb" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Content Type Analysis Table */}
+      <div className="bg-white border rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <FileText className="h-5 w-5" />
@@ -86,6 +127,7 @@ export function ContentTypeAnalysis({ contentTypes }: ContentTypeAnalysisProps) 
             })}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   )

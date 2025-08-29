@@ -161,7 +161,6 @@ export interface ContentTypeLocaleAdoption {
   publishedEntries: number
   lastActivity: Date
   activeUsers: string[]
-  adoptionScore: number
 }
 
 export interface StackUserMetrics {

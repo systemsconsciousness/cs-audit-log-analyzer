@@ -4,6 +4,7 @@ import { UserActivity, UserEngagement, AnalyticsData } from '@/types/audit-log'
 import { formatRelativeTime } from '@/lib/utils'
 import { ExportButton } from './ExportButton'
 import { User, Calendar, Hash, Zap, Database, Globe, FileText } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 interface TopUsersTableProps {
   users: UserActivity[]
@@ -17,8 +18,84 @@ export function TopUsersTable({ users, userEngagement, analytics }: TopUsersTabl
     acc[user.user] = user
     return acc
   }, {} as { [key: string]: UserEngagement })
+
+  // Chart data
+  const activityData = userEngagement
+    .sort((a, b) => b.totalEvents - a.totalEvents)
+    .slice(0, 10)
+    .map(user => ({
+      name: user.user.length > 15 ? user.user.substring(0, 15) + '...' : user.user,
+      events: user.totalEvents,
+      publishes: user.publishEvents
+    }))
+
+  const contentBuilders = userEngagement.filter(u => u.isContentBuilder).length
+  const userTypeData = [
+    { name: 'Content Builders', value: contentBuilders, color: '#7c4dff' },
+    { name: 'Other Users', value: analytics.uniqueUsers - contentBuilders, color: '#e2e8f0' }
+  ]
+
   return (
-    <div className="bg-white border rounded-lg overflow-hidden">
+    <div className="space-y-6">
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top Users Activity Chart */}
+        <div className="bg-white border rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Top Users by Activity</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={activityData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#fff', 
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="events" fill="#7c4dff" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* User Types Distribution */}
+        <div className="bg-white border rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">User Types</h3>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={userTypeData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {userTypeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* User Analysis Table */}
+      <div className="bg-white border rounded-lg overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -181,6 +258,7 @@ export function TopUsersTable({ users, userEngagement, analytics }: TopUsersTabl
             })}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   )
